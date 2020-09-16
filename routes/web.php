@@ -17,3 +17,5 @@ Route::get('/', function () {
 
 Route::match(['get', 'post'], '/botman', 'BotManController@handle');
 Route::get('botman/tinker', 'BotManController@tinker')->name('tinker');
+
+Route::resource('users', 'UsersController')->except(['show']);
