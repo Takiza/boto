@@ -10,6 +10,7 @@ $botman->hears('Hi', function ($bot) {
     });
 });
 $botman->hears('/start', BotManController::class.'@startConversation');
+$botman->hears('/find', BotManController::class.'@find');
 
 $botman->hears('random', \App\Http\Controllers\AllBreedsController::class.'@random');
 
