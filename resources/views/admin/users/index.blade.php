@@ -70,6 +70,7 @@
                 </tbody>
             </table>
             <a class="btn btn-success" href="{{ route('users.create') }}">New</a>
+            {{ $users->link() }}
         </div>
     </div>
 @stop

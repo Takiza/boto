@@ -58,7 +58,7 @@
         </div>
 
         <div class="links">
-            <a href="{{ route('tinker') }}">Tinker</a>
+{{--            <a href="{{ route('tinker') }}">Tinker</a>--}}
             <a href="{{ route('users.index') }}" target="_blank">Users</a>
         </div>
     </div>
