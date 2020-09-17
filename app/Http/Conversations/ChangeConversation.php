@@ -13,7 +13,7 @@ class ChangeConversation extends Conversation
     public function askChange()
     {
 
-        $question = Question::create("What are u want?");
+        $question = Question::create("What do u want?");
 
         $question->addButtons( [
             Button::create('Search users')->value(SearchConversation::class),

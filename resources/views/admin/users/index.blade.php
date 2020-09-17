@@ -9,7 +9,7 @@
             <h3 class="box-title">Users list</h3>
         </div>
         <div class="card-body">
-            <table id="categories-table" class="display" style="width:100%">
+            <table id="categories-table" class="table" style="width:100%">
                 <thead>
                 <tr>
                     <th>Id</th>

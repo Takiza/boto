@@ -13,7 +13,7 @@ class SearchConversation extends Conversation
     public function search()
     {
 
-        $question = Question::create("Select field");
+        $question = Question::create('Select field');
 
         $question->addButtons( [
             Button::create('first_name')->value('first_name'),
@@ -34,19 +34,19 @@ class SearchConversation extends Conversation
                 foreach ($users as $user) {
                     $this->say($user->first_name . ' ' . $user->last_name);
                 }
-                $this->edit($users);
+                $this->next($users);
             });
         });
 
     }
 
-    public function edit($users)
+    public function next($users)
     {
-        $question = Question::create("Would u like to edit one of this users?");
+        $question = Question::create('What is next?');
 
         $question->addButtons([
-            Button::create('Yes')->value(1),
-            Button::create('No')->value(2),
+            Button::create('Actions')->value(1),
+            Button::create('Back')->value(2),
         ]);
 
         $this->ask($question, function (Answer $answer) use ($users) {
@@ -59,15 +59,37 @@ class SearchConversation extends Conversation
 
     public function select($users)
     {
-        $select = Question::create("Select user");
+        $question = Question::create('Select user');
 
         foreach ($users as $user) {
-            $select->addButtons([Button::create($user->first_name . ' ' . $user->last_name)->value($user->id)]);
+            $question->addButtons([Button::create($user->first_name . ' ' . $user->last_name)->value($user->id)]);
         }
 
-        $this->ask($select, function (Answer $value) use ($users) {
+        $this->ask($question, function (Answer $value) use ($users) {
             $user = $users->firstWhere('id', $value->getValue());
-            $this->bot->startConversation(new EditConversation($user));
+            $this->actions($user);
+        });
+    }
+
+    public function actions($user)
+    {
+        $question = Question::create('Select action');
+
+        $question->addButtons([
+            Button::create('Edit')->value(1),
+            Button::create('Delete')->value(2),
+            Button::create('Back')->value(3)
+        ]);
+        $this->ask($question, function (Answer $answer) use ($user) {
+            if ($answer->getValue() == 1) {
+                $this->bot->startConversation(new EditConversation($user));
+            }
+            elseif ($answer->getValue() == 2) {
+                $this->bot->startConversation(new DeleteConversation($user->id));
+            }
+            else {
+                $this->bot->startConversation(new ChangeConversation());
+            }
         });
     }
 
