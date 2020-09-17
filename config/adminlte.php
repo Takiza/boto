@@ -250,9 +250,14 @@ return [
             'icon' => 'fas fa-fw fa-users',
         ],
         [
+            'text' => 'New User',
+            'url'  => 'users/create',
+            'icon' => 'fas fa-fw fa-user',
+        ],
+        [
             'text' => 'Welcome',
             'url'  => '/',
-            'icon' => 'fas fa-fw fa-block',
+            'icon' => 'fas fa-fw fa-back',
         ]
     ],
 

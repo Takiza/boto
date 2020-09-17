@@ -69,7 +69,6 @@
                 @endforeach
                 </tbody>
             </table>
-            <a class="btn btn-success" href="{{ route('users.create') }}">New</a>
             {{ $users->links() }}
         </div>
     </div>
