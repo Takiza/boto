@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Conversations\ChangeConversation;
+use App\Http\Conversations\CreateConversation;
+use App\Http\Conversations\SearchConversation;
 use App\User;
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\Messages\Incoming\Answer;
@@ -38,165 +41,50 @@ class BotManController extends Controller
      */
     public function startConversation(BotMan $bot)
     {
-        $users = User::all();
-        $bot->reply($users->toJson());
-//        $bot->startConversation(new ExampleConversation());
+        $bot->startConversation(new ChangeConversation());
     }
 
-    public function find(BotMan $bot)
-    {
-//        $user = User::firstWhere('id', 1);
-//        $bot->reply($user->first_name);
-        $question = Question::create("Select field");
-
-        $question->addButtons( [
-            Button::create('first_name')->value('first_name'),
-            Button::create('last_name')->value('last_name'),
-            Button::create('phone')->value('phone'),
-            Button::create('platform_id')->value('platform_id'),
-            Button::create('status')->value('status'),
-        ]);
-
-//        $bot->reply('ok');
-        $bot->ask($question, function (Answer $field) {
-            $this->ask('Value:', function (Answer $value) use ($field) {
-                $users = User::where($field, 'like', '%' . $value . '%')->get();
-                if (empty($users->first())) {
-                    return $this->bot->reply('Not find :(');
-                }
-                foreach ($users as $user) {
-                    $message = '------------------------------------------------ <br>';
-                    $message .= 'Name : '.$user->first_name.'<br>';
-                    $message .= 'Email : '.$user->first_name.'<br>';
-                    $message .= 'Mobile : '.$user->first_name.'<br>';
-                    $message .= 'Service : '.$user->first_name.'<br>';
-                    $message .= 'Date : '.$user->first_name.'<br>';
-                    $message .= 'Time : '.$user->first_name.'<br>';
-                    $message .= '------------------------------------------------';
-
-                    $this->say('Great. Your booking has been confirmed. Here is your booking details. <br><br>'.$message);
-//                    $message = OutgoingMessage::create("<a href=\"http://www.example.com/\">inline URL</a>");
-//                    $this->say($user->first_name . ' <b>bold</b> ' . $user->last_name, TelegramDriver::class, ['parse_mode' => 'HTML']);
-//                    $this->bot->say($message, $user->first_name, TelegramDriver::class,['parse_mode' => 'HTML']);
-                }
-                return true;
-            });
-
-//            $message = OutgoingMessage::create('This is my text' . $user);
-//            $message = response()->json(['id' => $user->id]);
-        });
-    }
-
-    public function create(BotMan $bot)
-    {
-        $user = [];
-
-        $question = Question::create("Do u want to create new user?");
-
-        $question->addButtons([
-            Button::create('Yes :3')->value(1),
-            Button::create('No :|')->value(2),
-        ]);
-
-        $fields = [
-            'First name' => 'first_name',
-            'Last name' => 'last_name',
-            'Email' => 'email',
-            'Phone' => 'phone',
-            'Platform' => 'platform_id',
-            'Status' => 'status'
-        ];
-
-
-
-        $bot->ask($question, function (Answer $answer) use ($fields, $user) {
-            if ($answer->getValue() == 1) {
-
-                $this->firstNameInput($this, $user);
-//                foreach ($fields as $field) {
-//                    $this->ask($field . ':', function (Answer $value) use ($field, $user) {
-//                        $user[$field] = $value;
-//                        $this->bot->reply($field . ' | ' . $value);
-//                    });
+//    public function find(BotMan $bot)
+//    {
+////        $user = User::firstWhere('id', 1);
+////        $bot->reply($user->first_name);
+//        $question = Question::create("Select field");
+//
+//        $question->addButtons( [
+//            Button::create('first_name')->value('first_name'),
+//            Button::create('last_name')->value('last_name'),
+//            Button::create('phone')->value('phone'),
+//            Button::create('platform_id')->value('platform_id'),
+//            Button::create('status')->value('status'),
+//        ]);
+//
+////        $bot->reply('ok');
+//        $bot->ask($question, function (Answer $field) {
+//            $this->ask('Value:', function (Answer $value) use ($field) {
+//                $users = User::where($field, 'like', '%' . $value . '%')->get();
+//                if (empty($users->first())) {
+//                    return $this->bot->reply('Not find :(');
 //                }
-            }
-            else $this->bot->reply('-_-');
-        });
-    }
-
-    public function statusInput($user)
-    {
-        $this->bot->ask(Question::create('Select status')->addButtons([
-            Button::create('Status 1')->value('Status 1'),
-            Button::create('Status 2')->value('Status 2'),
-        ])
-            , function (Answer $status) use ($user) {
-                $user['status'] = $status;
-                $this->bot->reply('Status' . ': ' . $status);
-
-                User::create([
-                    'first_name' => $user['first_name'],
-                    'last_name' => $user['last_name'],
-                    'email' => $user['email'],
-                    'phone' => $user['phone'],
-                    'platform_id' => $user['platform_id'],
-                    'status' => $user['status']
-                ]);
-                $this->bot->reply('Created');
-            });
-    }
-
-    public function platformInput($user)
-    {
-        $this->ask(Question::create('Select platform')->addButtons([
-            Button::create('Platform 1')->value(1),
-            Button::create('Platform 2')->value(2),
-        ])
-            , function (Answer $platform) use ($user) {
-                $user['platform_id'] = $platform;
-                $this->bot->reply('Platform' . ': ' . $platform);
-
-                $this->statusInput($user);
-            });
-    }
-
-    public function phoneInput($user)
-    {
-        $this->ask('Phone:', function (Answer $phone) use ($user) {
-            $user['phone'] = $phone;
-            $this->bot->reply('Phone' . ': ' . $phone);
-
-            $this->platformInput($user);
-        });
-    }
-
-    public function emailInput($user)
-    {
-        $this->ask('Email:', function (Answer $email) use ($user) {
-            $user['email'] = $email;
-            $this->bot->reply('Email' . ': ' . $email);
-
-            $this->phoneInput($user);
-        });
-    }
-
-    public function lastNameInput($user)
-    {
-        $this->ask('Second name:', function (Answer $second) use ($user) {
-            $user['last_name'] = $second;
-            $this->bot->reply('Second name' . ': ' . $second);
-
-            $this->emailInput($user);
-        });
-    }
-
-    public function firstNameInput($bot, $user)
-    {
-        $bot->ask('First name:', function (Answer $value) use ($user) {
-            $user['first_name'] = $value;
-            $this->bot->reply('First name' . ': ' . $value);
-
-//            $this->lastNameInput($user);
-        });
-    }
+//                foreach ($users as $user) {
+//                    $message = '------------------------------------------------ <br>';
+//                    $message .= 'Name : '.$user->first_name.'<br>';
+//                    $message .= 'Email : '.$user->first_name.'<br>';
+//                    $message .= 'Mobile : '.$user->first_name.'<br>';
+//                    $message .= 'Service : '.$user->first_name.'<br>';
+//                    $message .= 'Date : '.$user->first_name.'<br>';
+//                    $message .= 'Time : '.$user->first_name.'<br>';
+//                    $message .= '------------------------------------------------';
+//
+//                    $this->say('Great. Your booking has been confirmed. Here is your booking details. <br><br>'.$message);
+////                    $message = OutgoingMessage::create("<a href=\"http://www.example.com/\">inline URL</a>");
+////                    $this->say($user->first_name . ' <b>bold</b> ' . $user->last_name, TelegramDriver::class, ['parse_mode' => 'HTML']);
+////                    $this->bot->say($message, $user->first_name, TelegramDriver::class,['parse_mode' => 'HTML']);
+//                }
+//                return true;
+//            });
+//
+////            $message = OutgoingMessage::create('This is my text' . $user);
+////            $message = response()->json(['id' => $user->id]);
+//        });
+//    }
 }
