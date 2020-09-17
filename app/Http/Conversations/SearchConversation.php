@@ -29,6 +29,7 @@ class SearchConversation extends Conversation
                 if (empty($users->first())) {
                     $this->bot->reply('Not find :(');
                     $this->bot->startConversation(new ChangeConversation());
+                    return false;
                 }
                 foreach ($users as $user) {
                     $this->say($user->first_name . ' ' . $user->last_name);
