@@ -36,6 +36,8 @@ class UsersSeeder extends Seeder
 
         DB::table('users')->insert($users);
 
+        factory(\App\User::class, 50)->create();
+
         $this->enableForeignKeys();
     }
 }
