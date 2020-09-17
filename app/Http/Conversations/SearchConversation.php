@@ -10,7 +10,7 @@ use BotMan\BotMan\Messages\Outgoing\Question;
 
 class SearchConversation extends Conversation
 {
-    public function find()
+    public function search()
     {
 
         $question = Question::create("Select field");
@@ -23,9 +23,9 @@ class SearchConversation extends Conversation
             Button::create('status')->value('status'),
         ]);
 
-        $this->ask($question, function (Answer $field) {
-            $this->ask('Value:', function (Answer $value) use ($field) {
-                $users = User::where($field, 'like', '%' . $value . '%')->get();
+        $this->ask($question, function (Answer $answer) {
+            $this->ask('Value:', function (Answer $value) use ($answer) {
+                $users = User::where($answer, 'like', '%' . $value . '%')->get();
                 if (empty($users->first())) {
                     $this->bot->reply('Not find :(');
                     $this->bot->startConversation(new ChangeConversation());
@@ -34,10 +34,41 @@ class SearchConversation extends Conversation
                 foreach ($users as $user) {
                     $this->say($user->first_name . ' ' . $user->last_name);
                 }
-                $this->bot->startConversation(new ChangeConversation());
+                $this->edit($users);
             });
         });
 
+    }
+
+    public function edit($users)
+    {
+        $question = Question::create("Would u like to edit one of this users?");
+
+        $question->addButtons([
+            Button::create('Yes')->value(1),
+            Button::create('No')->value(2),
+        ]);
+
+        $this->ask($question, function (Answer $answer) use ($users) {
+            if ($answer->getValue() == 1) {
+                $this->select($users);
+            }
+            else $this->bot->startConversation(new ChangeConversation());
+        });
+    }
+
+    public function select($users)
+    {
+        $select = Question::create("Select user");
+
+        foreach ($users as $user) {
+            $select->addButtons([Button::create($user->first_name . ' ' . $user->last_name)->value($user->id)]);
+        }
+
+        $this->ask($select, function (Answer $value) use ($users) {
+            $user = $users->firstWhere('id', $value->getValue());
+            $this->bot->startConversation(new EditConversation($user));
+        });
     }
 
     /**
@@ -47,6 +78,6 @@ class SearchConversation extends Conversation
      */
     public function run()
     {
-        $this->find();
+        $this->search();
     }
 }
