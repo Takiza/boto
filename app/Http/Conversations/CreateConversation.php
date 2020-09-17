@@ -23,11 +23,13 @@ class CreateConversation extends Conversation
 
         $this->ask($question, function (Answer $answer) {
             if ($answer->getValue() == 1) {
-//                $this->bot->reply('Ok');
                 $this->askFirstName();
             }
 
-            else $this->bot->reply('-_-');
+            else {
+                $this->bot->reply('-_-');
+                $this->bot->startConversation(new ChangeConversation());
+            }
         });
     }
 
@@ -133,6 +135,7 @@ class CreateConversation extends Conversation
             'status' => $user['status']
         ]);
         $this->bot->reply('Created');
+        $this->bot->startConversation(new ChangeConversation());
     }
 
     /**

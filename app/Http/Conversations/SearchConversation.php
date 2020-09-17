@@ -23,21 +23,20 @@ class SearchConversation extends Conversation
             Button::create('status')->value('status'),
         ]);
 
-//        $bot->reply('ok');
         $this->ask($question, function (Answer $field) {
             $this->ask('Value:', function (Answer $value) use ($field) {
                 $users = User::where($field, 'like', '%' . $value . '%')->get();
                 if (empty($users->first())) {
-                    return $this->bot->reply('Not find :(');
+                    $this->bot->reply('Not find :(');
+                    $this->bot->startConversation(new ChangeConversation());
                 }
                 foreach ($users as $user) {
-//                    $message = OutgoingMessage::create("<a href=\"http://www.example.com/\">inline URL</a>");
-//                    $this->say($user->first_name . ' <b>bold</b> ' . $user->last_name, TelegramDriver::class, ['parse_mode' => 'HTML']);
                     $this->say($user->first_name . ' ' . $user->last_name);
                 }
-                return true;
+                $this->bot->startConversation(new ChangeConversation());
             });
         });
+
     }
 
     /**
