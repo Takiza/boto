@@ -8,6 +8,7 @@ use BotMan\BotMan\Messages\Incoming\Answer;
 use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use BotMan\BotMan\Messages\Outgoing\Question;
+use BotMan\Drivers\Telegram\TelegramDriver;
 use Illuminate\Http\Request;
 use App\Conversations\ExampleConversation;
 
@@ -64,7 +65,19 @@ class BotManController extends Controller
                     return $this->bot->reply('Not find :(');
                 }
                 foreach ($users as $user) {
-                    $this->bot->reply($user->first_name . ' ' . $user->last_name);
+                    $message = '------------------------------------------------ <br>';
+                    $message .= 'Name : '.$user->first_name.'<br>';
+                    $message .= 'Email : '.$user->first_name.'<br>';
+                    $message .= 'Mobile : '.$user->first_name.'<br>';
+                    $message .= 'Service : '.$user->first_name.'<br>';
+                    $message .= 'Date : '.$user->first_name.'<br>';
+                    $message .= 'Time : '.$user->first_name.'<br>';
+                    $message .= '------------------------------------------------';
+
+                    $this->say('Great. Your booking has been confirmed. Here is your booking details. <br><br>'.$message);
+//                    $message = OutgoingMessage::create("<a href=\"http://www.example.com/\">inline URL</a>");
+//                    $this->say($user->first_name . ' <b>bold</b> ' . $user->last_name, TelegramDriver::class, ['parse_mode' => 'HTML']);
+//                    $this->bot->say($message, $user->first_name, TelegramDriver::class,['parse_mode' => 'HTML']);
                 }
                 return true;
             });
